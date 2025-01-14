@@ -3,3 +3,7 @@ venv
 /venv
 taxi_zone_lookup.csv
 green_tripdata_2019-10.csv
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+terraform*
+.terraform*

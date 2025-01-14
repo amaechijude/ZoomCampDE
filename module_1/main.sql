@@ -1,21 +1,4 @@
-# Module One
-
-## Question 1
-```bash
-docker build -t <tag_name> .
-docker run -it tag_name
-pip --version
-#  23.3.1
-```
-
-## Question 2
-```bash
-docker-compose up -d --build
-## visit the pgadmin browser on localhost:8080
-```
-
-## Question 3
-```sql
+Question 3
 -- q1
 SELECT COUNT (*) 
 FROM public.tripdb
@@ -54,32 +37,10 @@ WHERE trip_distance > 10
     AND lpep_dropoff_datetime >= '2019-10-01 00:00:00'
     AND lpep_dropoff_datetime < '2019-11-01 00:00:00';
 
-```
 
-## Question 4
-```sql
-SELECT lpep_pickup_datetime
+-- Question 5
+SELECT PULocationID
 FROM public.tripdb
-WHERE trip_distance = (SELECT MAX(trip_distance) FROM public.tripdb)
-LIMIT 1;
-```
-
-## Question 5
-```sql
-
-```
-
-## Question 6
-```sql
-
-```
-
-## Question 7
-```bash
-$env:TF_VAR_azure_sql_admin_user = "<yourusername>"
-$env:TF_VAR_azure_sql_admin_password = "<yourpassword>"
-
-terraform init
-terraform apply -auto-approve
-terraform destroy
-```
+WHERE total_amount > 13_000
+    AND lpep_pickup_datetime >= '2019-10-18 00: 00: 00'
+    AND lpep_pickup_datetime < '2019-10-19 00: 00: 00';
