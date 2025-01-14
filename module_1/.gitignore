@@ -1,5 +1,5 @@
 .env
 venv
 /venv
-green_tripdata_2019-09.csv
 taxi_zone_lookup.csv
+green_tripdata_2019-10.csv
