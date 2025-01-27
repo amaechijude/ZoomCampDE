@@ -42,7 +42,25 @@ tasks:
     commands:
       - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
 
-  #- id: create_table
-  #  type: io.kestra.plugin.jdbc.postgresql.Queries
-   # sql:
+  - id: create_table
+    type: io.kestra.plugin.jdbc.postgresql.Queries
+    url: jdbc:postgresql://postgres:postgres@docker.host.internal:5432/kestradb
+    sql: |
+      CREATE TABLE IF NOT EXISTS ([remder(vars.table))) (
+        unique_row_id             text,
+        filenane                  text,
+        VendorID                  text,
+        1pep_pickup_datetime      timestanp,
+        lpep_dropoff_datetime     timestanp,
+        store_and_fwd_flag        text,
+        RatecodeID                text,
+        PULocatfonID              text,
+        DOLocationID              text,
+        passenger_count           integer,
+        trip_distance             double precision
+        fare_amount               double precision
+        extra                     double precision
+        sta_tax                   double precision
+
+
 
