@@ -42,6 +42,46 @@ tasks:
     commands:
       - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
 
+
+  - id: if_yellow
+    type: io.kestra.plugin.core.flow.If
+    condition: "{{ inputs.taxi == 'yellow' }}"
+    then:
+      - id: yellow_create_table
+        type: io.kestra.plugin.jdbc.postgresql.Queries
+        sql: | 
+          CREATE TABLE IF NOT EXISTS {{ render(vars.table)}} (
+            unique_row_id text,
+            filename text,
+            #other table header:
+
+          );
+      - id: yellow_create_staging_table
+        type: io.kestra.plugin.jdbc.postgresql.Queries
+        sql : |
+          CREATE TABLE IF NOT EXISTS {{render(vars.staging_table)}} (
+            unique_row_id text,
+            filename text, 
+            others ...
+          );
+
+      - id: truncate_yellow staging_table
+        type: io.kestra.plugin.jdbc.postgresql.Queries
+        sql: | 
+          TRUNCATE TABLE "{{render(vars.staging_table)}}"
+
+      - id: yellow_copy_data_to_staging_table
+        type: io.kestra.plugin.jdbc.postgresql.CopyIn
+        format: CSV
+        from: "{{render(vars.data)}}"
+        table: "{{render(vars.staging_table)}}"
+        header: true
+        columns: []
+        #unique columns 
+
+      - id: 
+
+
   - id: if_green
     type: io.kestra.plugin.core.flow.If
     condition: "{{ inputs.taxi == 'green' }}"
