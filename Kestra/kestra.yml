@@ -6,7 +6,7 @@ inputs:
     type: SELECT
     displayName: Select taxi type
     values: ["yellow", "green"]
-    defaults: "green"
+    defaults: "yellow"
 
   - id: year
     type: SELECT
@@ -19,7 +19,7 @@ inputs:
     displayName: Select month
     values:
       ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
-    defaults: "04"
+    defaults: "01"
 
 variables:
   file: "{{inputs.taxi}}_tripdata_{{inputs.year}}-{{inputs.month}}.csv"
@@ -76,7 +76,7 @@ tasks:
       - id: yellow_create_staging_table
         type: io.kestra.plugin.jdbc.postgresql.Queries
         sql: |
-          CREATE TABLE IF NOT EXISTS {{render(vars.table)}} (
+          CREATE TABLE IF NOT EXISTS {{render(vars.staging_table)}} (
             unique_row_id text,
             filename text,
             VendorID text,
@@ -96,13 +96,13 @@ tasks:
             tolls_amount double precision,
             improvement_surcharge double precision,
             total_amount double precision,
-            congestion_surcharge double precision,         
+            congestion_surcharge double precision       
             );
 
       - id: truncate_yellow_staging_table
         type: io.kestra.plugin.jdbc.postgresql.Queries
         sql: |
-          TRUNCATE TABLE "{{render(vars.staging_table)}}"
+          TRUNCATE TABLE {{render(vars.staging_table)}}
 
       - id: yellow_copy_data_to_staging_table
         type: io.kestra.plugin.jdbc.postgresql.CopyIn
@@ -135,12 +135,12 @@ tasks:
       - id: yellow_add_unique_filename
         type: io.kestra.plugin.jdbc.postgresql.Queries
         sql: | 
-          UPDATE: {{render(vars.staging_table)}}
+          UPDATE {{render(vars.staging_table)}}
           SET 
             unique_row_id = md5(
               COALESCE(CAST(VendorID AS text), '') ||
               COALESCE(CAST(tpep_pickup_datetime AS text), '') ||
-              COALESCE(CAST(tpep_dropoff_datetime), '') ||
+              COALESCE(CAST(tpep_dropoff_datetime AS text), '') ||
               COALESCE(CAST(PULocationID AS text), '') ||
               COALESCE(CAST(DOLocationID AS text), '') ||
               COALESCE(CAST(fare_amount AS text), '') ||
@@ -152,7 +152,7 @@ tasks:
         type: io.kestra.plugin.jdbc.postgresql.Queries
         sql: | 
           MERGE INTO {{render(vars.table)}} AS T
-          USING {{render(vars.staging_table)}}
+          USING {{render(vars.staging_table)}} AS S
           ON T.unique_row_id = S.unique_row_id
           WHEN NOT MATCHED THEN
             INSERT (
